@@ -21,7 +21,8 @@
         <callbacks>
         </callbacks>
         <parameters>
-        <!-- No version parameters -->
+            <parameter scope="instance" datatype="string"  min_n_values="1"  max_n_values="1"  name="ImageSource1"  default="http://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0211.jpg" section_name="external"/>
+            <parameter scope="instance" datatype="string"  min_n_values="1"  max_n_values="1"  name="ImageSource1Alt1"  default="" section_name="external"/>
         </parameters>
 
     </version>
