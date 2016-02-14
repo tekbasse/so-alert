@@ -1,130 +1,49 @@
-# Load the tclMagick module
-#
-load TclMagick.dll
+# Qualitative analysis
 
-# Create wand & draw objects
-#
-set wand [magick::wand create]
-set draw [magick::draw create]
+Solar Polar Flips produce magnetic fluctuations that affect Earth's magnetic field resulting in higher risk of mega-earthquakes.
+See Davidson, U-Yen, Holloman papers in New Concepts in Global Tectonics Journal, Volume 3, Number 3 September 2015 for numerical analysis behind qualitative interpretation of latest imagery.
 
-# Load & enlarge a PNG
-#
-$wand ReadImage sample.png
-$wand ResizeImage 500 500 cubic
-# Draw a red "Tcl/Tk" rotated by 45<B0>
-#
-$draw push graph
-    $draw SetStrokeWidth 1
-    $draw SetStrokeColorString "red"
-    $draw SetFillColorString "red"
-    $draw SetFontSize 18
-    $draw Annotation -97 170 "Tcl/Tk"
-$draw pop graph
-$draw Rotate -45
+In summary:
+Solar polar reversals tend to precede mega-earthquakes.
+Corona holes are outward oriented magnetic lines of force emitting streams of charged particles.
+Sunspots are localized erruptions of streams of charged particles that drive filaments.
+Prominences are smaller, more localized activity with filaments etc. on a smaller scale.
+Filaments produce synchrotron radiation.
+Mixed polarity sunspots destabilize filaments.
+Earth facing cornoa holes increase risk for earthquakes. 
+Peak sunspot counts (prior to any decreasing count) after a solar minimum is indicative of same risk pattern.
+Corona holes and large filaments are visible in ultraviolet spectrum.
+Sunspots are mainly visible in visible spectrum.
 
-$wand DrawImage $draw
+Additionally, we can postulate that:
+Changes in space current and magnetism around Earth can induce fluctuations in the Earth's magnetosphere.
+The higher the rate of change and larger the magnitude of change, the greater the affect.
 
-# Write the image in different file formats
-#
-$wand WriteImage sample.jpg
-$wand WriteImage sample.gif
-$wand WriteImage sample.pdf
+Some electromagnetics activity is observable via ground-based VLF and satellite OLR monitoring.
 
-# Delete wand & draw objects
-#
-magick::draw delete $draw
-magick::wand delete $wand
+# Quantitative analysis
 
+Given:
 
+1 angstrom = 0.1 nm or 10E-10 meter
+Extreme Ultraviolet (EUV or XUV) spectrum has range 10nm (124 eV) to 124nm (10eV).
+Near Ultraviolet (NUV) spectrum has range 400nm to 300nm.
+Middle Ultraviolet (MUV) spectrum has range 200nm to 300nm.
+Far Ultraviolet (FUV) spectrum has range 122nm to 200nm.
+Ultraviolet A (UVA) 315 to 400nm
+Ultraviolet B (UVB) 280 to 315nm
+Ultraviolet C (UVC) 100 to 280nm 
 
+EUV and UVC is mostly absorbed by atmosphere, ozone etc.
 
-
-package require Tk
-package require TclMagick
-package require TkMagick
-
-proc test_crop {} {
-
-    set red_wand [magick create wand]
-    set yellow_wand [magick create wand]
-
-    $red_wand ReadImage red.png
-    $yellow_wand ReadImage yellow.png
-
-    # select arbitrary crop dimensions
-    set width [expr [$yellow_wand width] - 100]
-    set height [expr [$yellow_wand height] - 100]
-    # crop a section away from the origin
-    $yellow_wand crop $width $height 50 50
-
-    # overlay the cropped result onto the red wand
-
-     $red_wand composite $yellow_wand over 50 50
-    # change to photo
-    set composite_photo [image create photo]
-    
-    magicktophoto $red_wand $composite_photo
-
-    # draw on canvas
-    canvas .c
-    .c create image 0 0 -image $composite_photo -anchor nw -tag crop
-    grid .c
-}
-
-proc clean_magick {} {
-    # free all of the magick objects
-    foreach mobj [magick names] {
-        magick delete $mobj
-    }
-}
+Ultraviolet solar images include: 
+  SDO's AIA 211, AIA 171, AIA 131, AIA 335, AIA 094
+  SOHO's EIT 171, 195, 284, 304
+                                 
+Cornoa Holes visible in:
+  SDO: AIA 211, AIA 094, AIA 335, AIA 131
+  SOHO: EIT 195, EIT 284, EIT 171
+# test data from
+www.lmsal.com/get_aia_data/
 
 
-
-
-
-
-
-Code Snippet: Convert: First page of a PDF to jpeg, resize and set to 72 dpi
-package require TclMagick
-
-set w [magick create wand]
-
-$w read ./mydoc.pdf\[0\]
-
-set width 180
-# calculate to preserve aspect ratio
-set height [expr {int ([$w height] * $width / [$w width])}]
-$w resize $width $height]
-
-$w resolution 72
-
-$w write mypict.jpg
-magick delete $w
-
-
-
-make sure to set font on Windows eg $draw SetFont "<FONT>" for Annotation or you will get nothing.
-lappend auto_path C:/Tcl/lib
-package require TclMagick
-
-set wand [magick create wand]
-set draw [magick create drawing]
-
-$wand ReadImage sample-in.jpg
-
-[magick create pixel pix] SetColor "blue"
-$draw push graph
-    $draw SetStrokeWidth 1
-    $draw SetStrokeColor pix
-    $draw SetFillColor pix
-    $draw SetFontSize 32
-    $draw SetFont "Arial"
-    $draw Annotation 20 50 "Hello world"
-$draw pop graph
-
-
-$wand DrawImage $draw
-$wand WriteImage sample-out.jpg
-
-magick delete $draw
-magick delete $wand
