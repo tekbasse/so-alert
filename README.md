@@ -1,7 +1,7 @@
-SO alert
+SO Alert
 ========
 
-A monitoring and analysis system for Suspicous Observers
+A Sun monitoring system
 
 The lastest version of the code is available at site:
  http://github.com/tekbasse/so-alert
@@ -9,18 +9,27 @@ The lastest version of the code is available at site:
 introduction
 ------------
 
-SO published a request for a quantifying analysis methodology of solar imagery for
-assessing risk of induced Earth events.
+This package analyses a series of solar disk images to
+assess risk of solar induced Earth events using quantified metrics.
+
+
+Ben Davidson of SuspicousObservers.org 
+inspired me to write this initial version
+when he published a request for a methodology to 
+quantify an aspect of his daily qualitative analysis of 
+solar monitoring. This is one way.
+
+
 
 license
 -------
-Copyright (c) 2014 Benjamin Brink
+Copyright (c) 2016 Benjamin Brink
 po box 20, Marylhurst, OR 97036-0020 usa
 email: tekbasse@yahoo.com
 
-GraphicsMagick Package is open source and published under the GNU General Public License, 
+SO Alert Package is open source and published under the GNU General Public License, 
 consistent with the OpenACS system license: http://www.gnu.org/licenses/gpl.html
-A local copy is available at graphicsmagick-toolkit/www/doc/LICENSE.html
+A local copy is available at so-alert/www/doc/LICENSE.html
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
