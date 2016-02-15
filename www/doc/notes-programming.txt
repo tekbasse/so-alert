@@ -23,9 +23,12 @@ Some electromagnetics activity is observable via ground-based VLF and satellite 
 
 # Quantitative analysis
 
-Given:
+Any predictive process should be tested against historical data for accuracy.
 
-1 angstrom = 0.1 nm or 10E-10 meter
+
+BACKGROUND
+
+Light spectrum properties:
 Extreme Ultraviolet (EUV or XUV) spectrum has range 10nm (124 eV) to 124nm (10eV).
 Near Ultraviolet (NUV) spectrum has range 400nm to 300nm.
 Middle Ultraviolet (MUV) spectrum has range 200nm to 300nm.
@@ -36,18 +39,60 @@ Ultraviolet C (UVC) 100 to 280nm
 
 EUV and UVC is mostly absorbed by atmosphere, ozone etc.
 
-Ultraviolet solar images include: 
+1 angstrom = 0.1 nm or 10E-10 meter
+
+
+OBSERVATION SOURCES
+Must be off Earth, since EUV and UVC are absorbed by atmosphere.
+
+Solar Dynamics Observatory (SDO)
+
+
+Solar (SOHO)
+
+
+
+SDO and SOHO designate imagery by principle angstrom wavelength of detector or filter.
+
+Ultraviolet solar image collections include: 
   SDO's AIA 211, AIA 171, AIA 131, AIA 335, AIA 094
   SOHO's EIT 171, 195, 284, 304
                                  
-Cornoa Holes visible in:
+Cornoa Holes visible in these, listed in order of highest detection first:
   SDO: AIA 211, AIA 094, AIA 335, AIA 131
   SOHO: EIT 195, EIT 284, EIT 171
-# test data from
-www.lmsal.com/get_aia_data/
 
-Notable largest quakes while space probes actively monitor sun:
 
-see file iris-eq-data-6.4-and-up.txt
+DATA -SOLAR
+
+
+SDO test data from: www.lmsal.com/get_aia_data/
+SOHO test data from: 
+
+
+DATA -EARTHQUAKES
+
+Earthquake data from IEB at http://ds.iris.edu/ieb/
+Notable largest quakes while space probes actively monitor sun can be 
+queried from server database soa_earthquakes.
+
+
+
+ALGORITHM
+
+Any solution comparing two variables over time must be careful to show 
+correlation without autocorrelation. 
+One way to minimize time is to split data into discrete measures of duration over equal time.
+By comparing two variables with respect to change over time instead
+of comparing absolutes, time is no longer associated with a fixed place
+in a timeline.
+
+To see if a correlation exists between two variables A and B, 
+split time so that the differential of A and B
+over each time unit is consistent --positive or negative.
+The spans of A and B should be split at the same points in time. 
+Each split (delta time) does not have to be equal in duration,
+but should be have a minimum duration where other durations are 
+an whole number multiple of 1 or more of it.
 
 
