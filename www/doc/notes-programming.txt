@@ -46,4 +46,8 @@ Cornoa Holes visible in:
 # test data from
 www.lmsal.com/get_aia_data/
 
+Notable largest quakes while space probes actively monitor sun:
+
+see file iris-eq-data-6.4-and-up.txt
+
 
