@@ -67,7 +67,14 @@ DATA -SOLAR
 
 
 SDO test data from: www.lmsal.com/get_aia_data/
+SDO is in a geosynchronous orbit with Earth.
+
 SOHO test data from: 
+SOHO orbits around L1.
+
+SOHO and SDO are Earth facing, and so allow solutions
+to avoid detailed orbital analysis such as 
+via NASA'S NAIF SPICE software.
 
 
 DATA -EARTHQUAKES
@@ -78,7 +85,7 @@ queried from server database soa_earthquakes.
 
 
 
-ALGORITHM
+ALGORITHMS
 
 Any solution comparing two variables over time must be careful to show 
 correlation without autocorrelation. 
@@ -95,4 +102,59 @@ Each split (delta time) does not have to be equal in duration,
 but should be have a minimum duration where other durations are 
 an whole number multiple of 1 or more of it.
 
+Using this method, plotting longer trends helps to identify
+signal from noise.
 
+
+Index1: Discriminating Spot Amalgamator
+
+This will assess risk by looking at the Earth facing disk, and 
+assessing a value for each image pixel of the Solar disk,
+and then assigning a significance based on position.
+Pixel position indicates time before or after its meridian 
+passes Earth, and its latitude relative to Earth's local orbital
+segment during the same time.
+parameters:
+ position
+ brightness
+
+
+LOCAL LIBRARY
+
+Some procedures will be shared between Algorithms. 
+
+soa_0deg_motion 
+   This will detect the motion between some significant points near the disk center
+and return a motion vector. It will be used to detect any change in polar orientation of image.
+Initial plan is:
+   get image1 and image2
+   grab N number of distinctly bright or dim pixels from central box in image1 of about 14deg; 
+   N is circa 9 or 12, 14degrees covers significant change in Earth position relative to Sun's equatorial plane.
+   N may start with all points, remove possible brightness outliers and statistically common ones.
+   Deterime the max distance between all the remaining points.
+   Remove all points that are close to each other.. ie identify N points with max separation.
+   Identify search field of image2, about equal to length of image1_central_box times 3 with same center point.
+   --This is to cover motion in any direction.
+   Identify N2 pixes similar to image1 pixels, where N2= N * surface area of image2_central_box / area of image1_central_box
+   calc distance between all N2 points.
+   Filter out all point distances where N2 distances are greater than N's and less than N's (allow for some drift)
+   Filter out all points that are referenced less than n-1 times.
+   If more than one cluster of matching points remain, compare the most distance cases of N2 with N1's and
+   compare the least distant cases of N2 with N1's. 
+   Using a bias of N points right of center, find cases where the motion vector is most consistent. 
+   Consider using least squares with N points and check against least squares of N2 points to find similar pattern.
+   Calculate and return the motion vector for each N to N2 points.
+   
+soa_rotate_solar_disk_q
+   Determine if image needs rotated by analyzing vectors.
+   The longest vectors will be closer to the solar equator
+   The right most points will likely indicate orientation of the arc of the solar equator (if Earth inclined).
+   Average left most ones to determine incoming motion
+   Rotate image if necessary.
+
+soa_analyze_risk_vX
+   Scan new image and assess risk.
+
+
+
+   
