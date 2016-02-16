@@ -124,6 +124,22 @@ LOCAL LIBRARY
 
 Some procedures will be shared between Algorithms. 
 
+soa_reposition_sol_disk
+  Possibly change image type, size and position of disk to fit system normalized image specs
+  This page shows that perspective changes definitely should be considered:
+  http://sdoisgo.blogspot.com/2016/01/january-maneuvers.html
+
+  Size is usually consistent since it's largely determined by perspective,
+  but I recall times when 512 images were used in place of larger ones on some feeds, 
+  which means that size should not always be assumed.
+
+  For determining diameter and disk edges, 
+  scan image to create a horizontal and vertical brightness profile 
+  perhaps by collecting an ordered set of subtotals of brightness of each pixel row and column.
+  This should result in a pattern that can discern a disk edge which can be used to create a mathematical definition of the outline.
+
+
+
 soa_0deg_motion 
    This will detect the motion between some significant points near the disk center
 and return a motion vector. It will be used to detect any change in polar orientation of image.
