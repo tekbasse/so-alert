@@ -1,0 +1,39 @@
+#so-alert/www/doc/notes.txt
+
+# source of latest solar images that highlight corona holes
+
+http://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0211.jpg
+
+Regarding input images, assume maximum variance possible so that system auto-adapts to changing circumstances.
+
+1. Raw feeds are totally unpredictable.
+
+2. Published near real-time (NRT) data tends to have a minimum amount of processing.
+
+3. Interpretation of observations tends to have a bunch of processing.
+
+4. The less processed NRT images are more likely to have predictability in publication timing and few variations including instability in size, position and orientation. Glitches tend to be editorialized --but not always.
+
+5. More processed observations tend to not look anything like the RAW images, are usually delayed, and are more consistent, usually tending to change only as investigative missions change their primary program phase or something new is introduced.
+
+In the case of SOHO latest images, orientation and size were usually consistent. Brightness and contrast changed depending on instrument capacity. SOHO used to put a "Bake Out" message in place of the usual feed when the instrument required baking a receiver flooded with ions.
+
+SDO seems to omit frames when there are glitches or an event demands full attention on assessing initial forecasting before continuing publishing a stream.  An extended presentation of a previous NRT image is common, as are occasional misalignments in orientation or position.
+
+Size is usually consistent since it's largely determined by perspective, but I recall times when 512 images were used in place of larger ones on some feeds, which means that size should not always be assumed.
+
+For determining diameter and disk edges, scan image to create a horizontal and vertical brightness profile perhaps by collecting an ordered set of subtotals of brightness of each pixel row and column. This should result in a pattern that can discern a disk edge which can be used to create a mathematical definition of the outline.
+
+Latitude and longitude seems more complex of an issue. We could assume north at the top, but something tells me that would be tested about the time Ben decides to promote the index.
+
+This page shows that perspective changes definitely should be considered:
+http://sdoisgo.blogspot.com/2016/01/january-maneuvers.html
+
+
+Another aspect of perspective is relative elevation of observer relative to Sun's equator. For example, Earth's orbit has an inclination of 7.155degrees (wikipeida) translating to a variance of +/- 7.155 degrees depending on time of year. Space probes will have their own perspective.
+
+
+We can infer latitude and longitude by tracking relative motion of some features with prior frames and using some statistics.  Not pretty, but maybe some features can be identified to simplify this. the Sun lacks bloat. With a flatness of 9E-06, it isn't feasible to determine poles from how distorted the disk edge is.. unless maybe.. a separate edge detection contained the corona in the image by eliminating the strict one-color background --that might be a useful sanity check for general polar orientation.
+
+
+Difference from Earth is negligible for SDO: http://sdo.gsfc.nasa.gov/mission/moc.php  

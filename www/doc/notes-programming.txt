@@ -1,0 +1,178 @@
+# Qualitative analysis
+
+Solar Polar Flips produce magnetic fluctuations that affect Earth's magnetic field resulting in higher risk of mega-earthquakes.
+See Davidson, U-Yen, Holloman papers in New Concepts in Global Tectonics Journal, Volume 3, Number 3 September 2015 for numerical analysis behind qualitative interpretation of latest imagery.
+
+In summary:
+Solar polar reversals tend to precede mega-earthquakes.
+Corona holes are outward oriented magnetic lines of force emitting streams of charged particles.
+Sunspots are localized erruptions of streams of charged particles that drive filaments.
+Prominences are smaller, more localized activity with filaments etc. on a smaller scale.
+Filaments produce synchrotron radiation.
+Mixed polarity sunspots destabilize filaments.
+Earth facing cornoa holes increase risk for earthquakes. 
+Peak sunspot counts (prior to any decreasing count) after a solar minimum is indicative of same risk pattern.
+Corona holes and large filaments are visible in ultraviolet spectrum.
+Sunspots are mainly visible in visible spectrum.
+
+Additionally, we can postulate that:
+Changes in space current and magnetism around Earth can induce fluctuations in the Earth's magnetosphere.
+The higher the rate of change and larger the magnitude of change, the greater the affect.
+
+Some electromagnetics activity is observable via ground-based VLF and satellite OLR monitoring.
+
+# Quantitative analysis
+
+Any predictive process should be tested against historical data for accuracy.
+
+
+BACKGROUND
+
+Light spectrum properties:
+Extreme Ultraviolet (EUV or XUV) spectrum has range 10nm (124 eV) to 124nm (10eV).
+Near Ultraviolet (NUV) spectrum has range 400nm to 300nm.
+Middle Ultraviolet (MUV) spectrum has range 200nm to 300nm.
+Far Ultraviolet (FUV) spectrum has range 122nm to 200nm.
+Ultraviolet A (UVA) 315 to 400nm
+Ultraviolet B (UVB) 280 to 315nm
+Ultraviolet C (UVC) 100 to 280nm 
+
+EUV and UVC is mostly absorbed by atmosphere, ozone etc.
+
+1 angstrom = 0.1 nm or 10E-10 meter
+
+
+OBSERVATION SOURCES
+Must be off Earth, since EUV and UVC are absorbed by atmosphere.
+
+Solar Dynamics Observatory (SDO)
+
+
+Solar (SOHO)
+
+
+
+SDO and SOHO designate imagery by principle angstrom wavelength of detector or filter.
+
+Ultraviolet solar image collections include: 
+  SDO's AIA 211, AIA 171, AIA 131, AIA 335, AIA 094
+  SOHO's EIT 171, 195, 284, 304
+                                 
+Cornoa Holes visible in these, listed in order of highest detection first:
+  SDO: AIA 211, AIA 094, AIA 335, AIA 131
+  SOHO: EIT 195, EIT 284, EIT 171
+
+
+DATA -SOLAR
+
+
+SDO test data from: www.lmsal.com/get_aia_data/
+SDO is in a geosynchronous orbit with Earth.
+
+SOHO test data from: 
+SOHO orbits around L1.
+
+SOHO and SDO are Earth facing, and so allow solutions
+to avoid detailed orbital analysis such as 
+via NASA'S NAIF SPICE software.
+http://naif.jpl.nasa.gov/naif/utilities__PC_Linux_64bit.html
+
+
+DATA -EARTHQUAKES
+
+Earthquake data from IEB at http://ds.iris.edu/ieb/
+Notable largest quakes while space probes actively monitor sun can be 
+queried from server database soa_earthquakes.
+
+
+
+ALGORITHMS
+
+Any solution comparing two variables over time must be careful to show 
+correlation without autocorrelation. 
+One way to minimize time is to split data into discrete measures of duration over equal time.
+By comparing two variables with respect to change over time instead
+of comparing absolutes, time is no longer associated with a fixed place
+in a timeline.
+
+To see if a correlation exists between two variables A and B, 
+split time so that the differential of A and B
+over each time unit is consistent --positive or negative.
+The spans of A and B should be split at the same points in time. 
+Each split (delta time) does not have to be equal in duration,
+but should be have a minimum duration where other durations are 
+an whole number multiple of 1 or more of it.
+
+Using this method, plotting longer trends helps to identify
+signal from noise.
+
+
+Index1: Discriminating Spot Amalgamator
+
+This will assess risk by looking at the Earth facing disk, and 
+assessing a value for each image pixel of the Solar disk,
+and then assigning a significance based on position.
+Pixel position indicates time before or after its meridian 
+passes Earth, and its latitude relative to Earth's local orbital
+segment during the same time.
+parameters:
+ position
+ brightness
+
+
+LOCAL LIBRARY
+
+Some procedures will be shared between Algorithms. 
+
+soa_reposition_sol_disk
+  Possibly change image type, size and position of disk to fit system normalized image specs
+  This page shows that perspective changes definitely should be considered:
+  http://sdoisgo.blogspot.com/2016/01/january-maneuvers.html
+
+  Size is usually consistent since it's largely determined by perspective,
+  but I recall times when 512 images were used in place of larger ones on some feeds, 
+  which means that size should not always be assumed.
+
+  For determining diameter and disk edges, 
+  scan image to create a horizontal and vertical brightness profile 
+  perhaps by collecting an ordered set of subtotals of brightness of each pixel row and column.
+  This should result in a pattern that can discern a disk edge which can be used to create a mathematical definition of the outline.
+
+
+
+soa_0deg_motion 
+   This will detect the motion between some significant points near the disk center
+and return a motion vector. It will be used to detect any change in polar orientation of image.
+Initial plan is:
+   get image1 and image2
+   grab N number of distinctly bright or dim pixels from central box in image1 of about 14deg; 
+   N is circa 9 or 12, 14degrees covers significant change in Earth position relative to Sun's equatorial plane.
+   N may start with all points, remove possible brightness outliers and statistically common ones.
+   Deterime the max distance between all the remaining points.
+   Remove all points that are close to each other.. ie identify N points with max separation.
+   Identify search field of image2, about equal to length of image1_central_box times 3 with same center point.
+   --This is to cover motion in any direction.
+   Identify N2 pixes similar to image1 pixels, where N2= N * surface area of image2_central_box / area of image1_central_box
+   calc distance between all N2 points.
+   Filter out all point distances where N2 distances are greater than N's and less than N's (allow for some drift)
+   Filter out all points that are referenced less than n-1 times.
+   If more than one cluster of matching points remain, compare the most distance cases of N2 with N1's and
+   compare the least distant cases of N2 with N1's. 
+   Using a bias of N points right of center, find cases where the motion vector is most consistent. 
+   Consider using least squares with N points and check against least squares of N2 points to find similar pattern.
+   Calculate and return the motion vector for each N to N2 points.
+   
+soa_rotate_solar_disk_q
+   Determine if image needs rotated by analyzing vectors.
+   The longest vectors will be closer to the solar equator
+   The right most points will likely indicate orientation of the arc of the solar equator (if Earth inclined).
+   Average left most ones to determine incoming motion
+   compare with ones from recent image history 
+   Rotate image if necessary.
+
+soa_analyze_risk_vX
+   Scan new image and assess risk.
+
+
+
+   
