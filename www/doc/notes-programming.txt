@@ -75,6 +75,7 @@ SOHO orbits around L1.
 SOHO and SDO are Earth facing, and so allow solutions
 to avoid detailed orbital analysis such as 
 via NASA'S NAIF SPICE software.
+http://naif.jpl.nasa.gov/naif/utilities__PC_Linux_64bit.html
 
 
 DATA -EARTHQUAKES
@@ -150,6 +151,7 @@ soa_rotate_solar_disk_q
    The longest vectors will be closer to the solar equator
    The right most points will likely indicate orientation of the arc of the solar equator (if Earth inclined).
    Average left most ones to determine incoming motion
+   compare with ones from recent image history 
    Rotate image if necessary.
 
 soa_analyze_risk_vX
