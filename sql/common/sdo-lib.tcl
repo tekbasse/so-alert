@@ -23,7 +23,7 @@ set eq_events [list 2010-04-06 2010-10-25 2011-03-11 2012-04-11 2012-10-28 2013-
 puts "proc event_date_range { event_yyyymmdd days_before days_after }"
 puts "proc date_range_lister { first_yyyymmdd last_yyyymmdd } "
 puts "proc sdo_browse_images_url_list { } "
-puts "proc sdo_browse_images_url_list { } "
+puts "proc soho_browse_images_url_list { } "
 puts "proc sdo_imagename_to_params_list { imagename } "
 puts "proc sdo_import_imagenames { filename } "
 
@@ -43,19 +43,42 @@ proc event_date_range { event_yyyymmdd days_before days_after} {
     return $date_list
 }
 
-proc date_range_lister { first_yyyymmdd last_yyyymmdd } {
+proc date_range_lister { first_yyyymmdd last_yyyymmdd {v 1}} {
     # a date range builder
     # for choosing a set of dates from first to last inclusive
     set date_list [list ]
     set day_sec [expr { 24 * 60 * 60 } ]
     set first_date_sec [clock scan $first_yyyymmdd -format "%Y%m%d" ]
     set last_date_sec [clock scan $last_yyyymmdd -format "%Y%m%d" ]
-    for { set i $first_date_sec} { $i <= $last_date_sec } { incr i $day_sec } {
-	set date [clock format $i -format "/%Y/%m/%d/"]
-	lappend date_list $date
+    if { $v == 1 } {
+	for { set i $first_date_sec} { $i <= $last_date_sec } { incr i $day_sec } {
+	    set date [clock format $i -format "/%Y/%m/%d/"]
+	    lappend date_list $date
+	}
+    } elseif { $v == 2 } {
+	for { set i $first_date_sec} { $i <= $last_date_sec } { incr i $day_sec } {
+	    set date [clock format $i -format "%Y%m%d"]
+	    lappend date_list $date
+	}
     }
     return $date_list
 }
+
+
+proc soho_browse_images_url_list { } {
+    set day1 "19960115"
+    set dayN "20151230"
+    set day_list [date_range_lister $day1 $dayN 2]
+    set i 0
+    foreach day $day_list {
+	#http://sohowww.nascom.nasa.gov//data/REPROCESSING/Completed/2016/eit195/20160221/
+	set yyyy [string range $day 0 3]
+	puts "http://sohowww.nascom.nasa.gov/data/REPROCESSING/Completed/${yyyy}/eit195/${day}/"
+	incr i
+    }
+    puts "$i days"
+}
+
 
 proc sdo_browse_images_url_list { } {
     set day1 "20100521"
