@@ -50,6 +50,9 @@ Solar Dynamics Observatory (SDO)
 
 Solar (SOHO)
 
+Advanced Composition Explorer (ACE)
+located near L1 circa 1,500,000km from Earth toward Sun.
+ACE indicates primary wind speed, direction, density (at L1)
 
 
 SDO and SOHO designate imagery by principle angstrom wavelength of detector or filter.
