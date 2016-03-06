@@ -107,5 +107,41 @@ CREATE index soa_neo_approaches_approach_id on soa_neo_approaches(approach_id);
 CREATE index soa_neo_approaches_object_ref on soa_neo_approaches(object_ref);
 CREATE index soa_neo_approaches_date on soa_neo_approaches(date);
 
-       
-      
+
+CREATE TABLE soa_earth_sun_moon_events (
+       -- source ie catalog etc
+       -- for example: SE
+       -- see cross-reference soa_earth_sun_moon_events.source    
+       source varchar(16),
+       -- event reference assigned by source
+       source_ref varchar(30),
+       -- event type basic
+       -- solar eclipse, lunar eclipse, lunar 1st qtr, lunar full moon, lunar 3rd quarter etc.
+       -- for example:
+       -- solar-eclipse, luna-eclipse, luna-first, luna-full luna-third, luna-new
+       type varchar(14),
+       -- yyyy-mm-dd
+       date date,
+       -- the 'center' of the event orientation
+       time_utc time without time zone,
+       duration_s integer,
+       -- distance between Earth and Moon centers
+       lunar_dist_km numeric,
+       -- source of lunar_distance calculation
+       lunar_dist_km_by varchar(30),
+       -- other notes that may have been included with original data
+       notes text
+);
+
+CREATE TABLE soa_earth_sun_moon_event_sources (
+       -- source ie catalog etc,
+       -- for example: SE, see cross-reference soa_earth_sun_moon_events.source
+       source varchar(16),
+       -- notes could contain for example:
+
+       -- Five Millennium Catalog of Solar Eclipses: -1999 to 3000 (2000 BCE to 3000CE)
+       -- by Fred Espenak nd Jean Meeus 
+       -- Based on NASA Technical Publication TP-2006-21414, 2007 Jan 26
+       -- retrieved from: http://eclipse.gsfc.nasa.gov/5MCSE/5MCSEcatalog.txt
+       notes text
+);
