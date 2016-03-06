@@ -520,7 +520,35 @@ proc se_events_import { filename } {
     # splitting by end-of-line
     set data_set_list [split $data_txt "\n\r"]
   
-    # Data is in fixed-width format, so extracting by columns
+    # Data is in fixed-width format, so extract by columns
+
+    # data to be fitted into table:
+    # CREATE TABLE soa_earth_sun_moon_events 
+    #   -- source ie catalog etc
+    #   -- for example: SE
+    #   -- see cross-reference soa_earth_sun_moon_events.source    
+    #   source varchar(16),
+    #   -- event reference assigned by source
+    #   source_ref varchar(30),
+    #   -- event type basic
+    #   -- solar eclipse, lunar eclipse, lunar 1st qtr, lunar full moon, lunar 3rd quarter etc.
+    #   -- for example:
+    #   -- solar-eclipse, luna-eclipse, luna-first, luna-full luna-third, luna-new
+    #   type varchar(14),
+    #   -- yyyy-mm-dd
+    #   date date,
+    #   -- the 'center' of the event orientation
+    #   time_utc time without time zone,
+    #   duration_s integer,
+    #   -- distance between Earth and Moon centers
+    #   lunar_dist_km numeric,
+    #   -- source of lunar_distance calculation
+    #   lunar_dist_km_by varchar(30),
+    #   -- other notes that may have been included with original data
+    #   notes text
+
+
+
     set table_lists [list ]
     set line_count 0
 
@@ -536,9 +564,37 @@ proc se_events_import { filename } {
         set type "SE-"
         append type [string trim [string range $line 55 58]]
         # (year-sign or blank) yyyy
-        set sign 
-        set syyyy [string range $line 12 16]
-        set
+        set sign [string trim [string range $line 12 12]]
+        if { $sign eq "" } {
+            set ee "A.D."
+            set ee_sql "AD"
+        } else {
+            set ee "B.C."
+            set ee_sql "BC"
+        }
+
+        set yyyy [string trim [string range $line 13 16]]
+        set h [string trim [string range $line 18 20]]
+        set dd [string trim [string range $line 22 23]]
+        set date_s [clock scan "$yyyy-$h-$dd $ee" -format "%Y-%h-%d %EE"]
+        # If this were to be formated back to tcl:
+        #set date \[clock $date_s -format "%Y-%m-%d %EE"\]
+        # or
+        #set date \[clock scan $yyyy-$h-$dd -format "%Y-%h-%d%EE"\]
+        # but we're formatting for sql input
+        set date [string range [clock $date_s -format "%Y-%m-%d %EE"] 0 end-4]
+        append date $ee_sql
+        #   time_utc time without time zone,
+        
+        #   duration_s integer,
+        #   -- distance between Earth and Moon centers
+        #   lunar_dist_km numeric,
+        #   -- source of lunar_distance calculation
+        #   lunar_dist_km_by varchar(30),
+        #   -- other notes that may have been included with original data
+        #   notes text
+
+
     }
     #  table_lists is a list of lists.
 
