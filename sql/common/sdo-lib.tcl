@@ -28,7 +28,8 @@ puts "proc sdo_import_imagenames { filename } "
 puts "proc soho_browse_images_url_list { } "
 puts "proc soho_imagename_to_params_list { }"
 puts "proc soho_import_imagenames { filename }"
-puts "proc se_events_import { filename } "
+puts "proc 5mcse_events_import { filename } "
+puts "proc 5mcle_events_import { filename } "
 proc event_date_range { event_yyyymmdd days_before days_after} {
     # a date range builder 
     # for choosing a set of dates around an event
@@ -501,7 +502,7 @@ proc soho_import_imagenames { filename } {
 
 
 ####
-proc se_events_import { filename } {
+proc 5mcse_events_import { filename } {
     # returns data as a list of lists
     # in form:  $year_decimal $month_decimal $day_decimal $hour_decimal $minute_decimal $seconds $width $instrument_info
     set data_txt ""
@@ -654,6 +655,170 @@ proc se_events_import { filename } {
 
 
     set newfilename "solar-eclipse.dat"
+    set fileId [open $newfilename w]    
+    foreach row_list $table_lists {
+        set row [join $row_list ";"]
+        #	puts $row
+        puts $fileId $row
+    }
+    close $fileId
+    puts "${newfilename} created."
+
+}
+
+
+proc 5mcle_events_import { filename } {
+
+
+    set data_txt ""
+    #  cfcount = file counter
+    set cfcount 1
+    set fileId [open $filename r]
+    puts "reading."
+    while { ![eof $fileId] } {
+        #  Read entire file. 
+        append data_txt [read $fileId]
+        puts -nonewline "."
+    }
+    close $fileId
+    #  split is unable to split lines consistently with \n or \r
+    #  so, splitting by everything, and recompiling each line of file.
+    # splitting by end-of-line
+    set data_set_list [split $data_txt "\n\r"]
+    
+    # Data is in fixed-width format, so extract by columns
+
+    # data to be fitted into table:
+    # CREATE TABLE soa_earth_sun_moon_events 
+    #   -- source ie catalog etc
+    #   -- for example: SE
+    #   -- see cross-reference soa_earth_sun_moon_events.source    
+    #   source varchar(16),
+    #   -- event reference assigned by source
+    #   source_ref varchar(30),
+    #   -- event type basic
+    #   -- solar eclipse, lunar eclipse, lunar 1st qtr, lunar full moon, lunar 3rd quarter etc.
+    #   -- for example:
+    #   -- solar-eclipse, luna-eclipse, luna-first, luna-full luna-third, luna-new
+    #   type varchar(14),
+    #   -- yyyy-mm-dd
+    #   date date,
+    #   -- the 'center' of the event orientation
+    #   time_utc time without time zone,
+    #   duration_s integer,
+    #   -- distance between Earth and Moon centers
+    #   lunar_dist_km numeric,
+    #   -- source of lunar_distance calculation
+    #   lunar_dist_km_by varchar(30),
+    #   -- other notes that may have been included with original data
+    #   notes text
+
+
+
+    set table_lists [list ]
+    set line_count 0
+
+    # source doesn't vary for file
+    set source "5MCLE"
+    foreach {line} $data_set_list {
+        if { [string length $line] > 39 } {
+            #  data integrity check (minimal, because file is in a standardized format).
+            #  Each line must includee Sun Azm, path width and Central Duration is optional
+            # so minimum width is 97 characters
+            
+            set source_ref [string trim [string range $line 0 4]]
+            # le = solar eclipse
+            set type "LE-"
+            append type [string trim [string range $line 55 58]]
+            #  Eclipse Type where:
+            #Type         N  = Penumbral Lunar Eclipse.
+            #             P  = Partial Lunar Eclipse (in umbra).
+            #             T  = Total Lunar Eclipse (in umbra).
+            #           Second character in Eclipse Type:
+            #             "m" = Middle eclipse of Saros series.
+            #             "+" = Central total eclipse 
+            #                   (Moon's center passes north of shadow axis).
+            #             "-" = Central total eclipse 
+            #                   (Moon's center passes south of shadow axis).
+            #             "*" = Total penumbral lunar eclipse.
+            #             "b" = Saros series begins (first penumbral eclipse in series).
+            #             "e" = Saros series ends (last penumbral eclipse in series).
+
+            # (year-sign or blank) yyyy
+            set sign [string trim [string range $line 7 7]]
+            if { $sign eq "" } {
+                set ee "A.D."
+                set ee_sql "AD"
+            } else {
+                set ee "B.C."
+                set ee_sql "BC"
+            }
+
+            set yyyy [string trim [string range $line 8 11]]
+            set h [string trim [string range $line 13 15]]
+            set dd [string trim [string range $line 17 18]]
+            #set date_s \[clock scan "$yyyy-$h-$dd $ee" -format "%Y-%h-%d %EE"\]
+            # If this were to be formated back to tcl:
+            #set date \[clock $date_s -format "%Y-%m-%d %EE"\]
+            # or
+            #set date \[clock scan $yyyy-$h-$dd -format "%Y-%h-%d%EE"\]
+            # but we're formatting for sql input
+            # dt = dynamical time, see SEcatkey
+            set time_dt [string range $line 21 28] 
+            puts "$line_count $yyyy-$h-$dd $ee ${time_dt}"
+            set date_time_s [clock scan "$yyyy-$h-$dd $ee ${time_dt}" -format "%Y-%h-%d %EE %H:%M:%S"]
+            #   time_utc time without time zone,
+            set t_delta [string trim [string range $line 31 35]]
+
+            # delta_t = time_dt - time_utc  per eclipse.gsfc.nasa.gov/SEcat5/deltat.html
+            set datetime_utc_s [expr { $date_time_s - $t_delta } ]
+            set date [string range [clock format $datetime_utc_s -format "%Y-%m-%d %EE"] 0 end-4]
+            append date $ee_sql
+            set time_utc [clock format $datetime_utc_s -format "%H:%M:%S"]
+            #   duration_s integer,
+            # remove leading zeros and spaces using trimleft "0"
+            set duration [string trim [string range $line 84 102]]
+            # duration can be in three parts, Pen. Par. Total(shadow)
+            # Pen. is longest, so lets use it.
+            set duration_m [string trimleft [string range $duration 0 4] " 0-"]
+            if { [string length $duration_m] < 2 } {
+                # shouldn't happen since all lunar eclipses have a pen. shadow
+                set duration_s 0
+                puts "Warning(1): duration_s 0 for catalog# $source_ref  This should NOT happen."
+            } else {
+                set duration_s [expr { round( $duration_m * 60. ) } ]
+            }
+            #   -- distance between Earth and Moon centers
+            #   lunar_dist_km numeric,
+            set lunar_dist_km ""
+            #   -- source of lunar_distance calculation
+            #   lunar_dist_km_by varchar(30),
+            set lunar_dist_km_by ""
+            #   -- other notes that may have been included with original data
+            #   notes text
+            set duration_tot [string trimleft [string range $duration end-4 end] " 0-"]
+            if { $duration_tot ne "" } {
+                set duration_tot [expr { $duration_tot * 60 } ]
+                set notes "Totality ${duration_tot} s."
+            } else {
+                set notes ""
+            }
+            set record_list [list $source $source_ref $type $date $time_utc $duration_s $lunar_dist_km $lunar_dist_km_by $notes]
+            lappend table_lists $record_list
+            incr line_count
+        }
+    }
+    #  table_lists is a list of lists.
+
+    # sort it by time and date
+    #set table_lists \[lsort -ascii -increasing -index 1 $table_lists\]
+    #set table_lists \[lsort -ascii -increasing -index 0 $table_lists\]
+    puts "[llength $table_lists] data points imported to table_lists."
+    # modify table, add priority and notes fields
+    puts "$filename has ${line_count} data points."
+
+
+    set newfilename "lunar-eclipse.dat"
     set fileId [open $newfilename w]    
     foreach row_list $table_lists {
         set row [join $row_list ";"]
