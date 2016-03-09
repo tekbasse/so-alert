@@ -30,6 +30,9 @@ puts "proc soho_imagename_to_params_list { }"
 puts "proc soho_import_imagenames { filename }"
 puts "proc 5mcse_events_import { filename } "
 puts "proc 5mcle_events_import { filename } "
+puts "proc usno_moon_phases { } "
+puts "proc usno_moon_phases_to_dat { }"
+
 proc event_date_range { event_yyyymmdd days_before days_after} {
     # a date range builder 
     # for choosing a set of dates around an event
@@ -821,6 +824,125 @@ proc 5mcle_events_import { filename } {
     set newfilename "lunar-eclipse.dat"
     set fileId [open $newfilename w]    
     foreach row_list $table_lists {
+        set row [join $row_list ";"]
+        #	puts $row
+        puts $fileId $row
+    }
+    close $fileId
+    puts "${newfilename} created."
+
+}
+
+proc usno_moon_phases { } {
+    set newfilename "moon-phases-wget.txt"
+    set fileId [open $newfilename w]    
+
+    for {set y 1900} {$y < 2100} {incr y} {
+        # one query per year, maybe with extras
+        set row "http://aa.usno.navy.mil/cgi-bin/aa_phases.pl?year=${y}&month=1&day=1&nump=55&format=t"
+        puts $fileId $row
+    }
+    close $fileId
+    puts "${newfilename} created."
+
+}
+
+proc usno_moon_phases_to_dat { } {
+    set oldfilename "aa.usno.navy.mil/one-big-lunar-phase-file.html"
+
+    set data_txt ""
+    #  cfcount = file counter
+    set cfcount 1
+    set fileId [open $oldfilename r]
+    puts "reading."
+    while { ![eof $fileId] } {
+        #  Read entire file. 
+        append data_txt [read $fileId]
+        puts -nonewline "."
+    }
+    close $fileId
+    # get rid of extra spaces and all EOLs
+    regsub -all -- {[\ \t\n]+} $data_txt { } data2_txt
+
+    # create a new line for each table row
+    regsub -all -- {<tr>} $data2_txt "\n" data3_txt
+    regsub -all -- {</tr>} $data3_txt "\n" data4_txt
+    
+    #  split is unable to split lines consistently with \n or \r
+    #  so, splitting by everything, and recompiling each line of file.
+    # splitting by end-of-line
+    set data1_list [split $data4_txt "\n"]
+    set data2_lists [list ]
+
+    set source "aa.usno"
+    # aa.usno = Astronimical Applications dept of the USNO, http://aa.usno.navy.mil/
+    set duration_s ""
+    set lunar_dist_km ""
+    set lunar_dist_km_by ""
+    
+    foreach line $data1_list {
+        # is this a data row?
+        if { [regexp -nocase -- {^[\ ]*[\<][t][d][\>]([a-z\ ]+)[\<][\/][t][d][\>][\ ]*[\<][t][d][\>]([0-9a-z\ \:\-]+)[\<][\/][t][d][\>][\ ]$} $line scratch type_desc datetime_utc] } {
+            set notes ""
+
+            # parse type to pseudo 5MC nasa eclipse types
+            set type_desc [string trim $type_desc]
+            regsub -nocase -- { } $type_desc {} type_name 
+            switch -nocase -- $type_name {
+                NewMoon { 
+                    set type "LNM"
+                }
+                FirstQuarter {
+                    set type "LFQ"
+                }
+                FullMoon {
+                    set type "LFM"
+                }
+                LastQuarter {
+                    set type "LLQ"
+                }
+                default {
+                    set type "L??"
+                    set notes "unknown moon phase entry"
+                    puts "unknown moon phase entry '$type_desc'"
+                }
+            }
+            # parse time
+            set yyyy [string range $datetime_utc 0 3]
+            set h [string range $datetime_utc 5 7]
+            set dd [string range $datetime_utc 9 10]
+            #set ee "A.D."
+            set time_utc [string range $datetime_utc 12 16]
+            set date_time_s [clock scan "$yyyy-$h-$dd ${time_utc}" -format "%Y-%h-%d %H:%M"]
+            #   time_utc time without time zone,
+            set date [clock format $date_time_s -format "%Y-%m-%d"]
+            set time_utc [clock format $date_time_s -format "%H:%M"]
+            set source_ref "${yyyy}-${h}-${dd}"
+
+            set new_line_list [list $source $source_ref $type $date $time_utc $duration_s $lunar_dist_km $lunar_dist_km_by $notes]
+            lappend data2_lists $new_line_list
+        } else {
+            if { [string length $line] > 10 } {
+                set maybe_data_p 0
+                set check_list [list moon jan feb mar apr may jun jul aug sep oct nov dec ]
+                foreach check $check_list {
+                    set maybe_data_p [expr { [string match -nocase $check $line] || $maybe_data_p } ]
+                }
+                if { $maybe_data_p } {
+                    puts "rejected -->$line"
+                }
+               # puts "rejected '[string range $line 0 20]..[string range $line end-9 end]'"
+            }
+        }
+    }
+    puts "[llength $data2_lists] points with duplicates"
+    # remove duplicates
+    set data3_lists [lsort -increasing -ascii -index 1 -unique $data2_lists]
+    puts "[llength $data3_lists] points without duplicates"
+
+    set newfilename "lunar-phase.dat"
+    set fileId [open $newfilename w]    
+    foreach row_list $data3_lists {
         set row [join $row_list ";"]
         #	puts $row
         puts $fileId $row
