@@ -133,6 +133,9 @@ CREATE TABLE soa_earth_sun_moon_events (
        notes text
 );
 
+CREATE index soa_earth_sun_moon_events_type on soa_earth_sun_moon_events(type);
+CREATE index soa_earth_sun_moon_events_date on soa_earth_sun_moon_events(date);
+
 CREATE TABLE soa_earth_sun_moon_event_sources (
        -- source ie catalog etc,
        -- for example: SE, see cross-reference soa_earth_sun_moon_events.source

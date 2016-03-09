@@ -27,3 +27,8 @@ DROP index soa_neo_approaches_object_ref;
 DROP index soa_neo_approaches_date;
 DROP TABLE soa_neo_approaches;
 
+DROP TABLE soa_earth_sun_moon_event_sources;
+
+DROP index soa_earth_sun_moon_events_type;
+DROP index soa_earth_sun_moon_events_date;
+DROP TABLE soa_earth_sun_moon_events;
