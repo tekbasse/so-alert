@@ -589,9 +589,11 @@ proc 5mcse_events_import { filename } {
             set sign [string trim [string range $line 12 12]]
             if { $sign eq "" } {
                 set ee "A.D."
+                set ee2 "C.E."
                 set ee_sql "AD"
             } else {
                 set ee "B.C."
+                set ee2 "B.C.E."
                 set ee_sql "BC"
             }
 
@@ -606,15 +608,16 @@ proc 5mcse_events_import { filename } {
             # but we're formatting for sql input
             # dt = dynamical time, see SEcatkey
             set time_dt [string range $line 26 33] 
-            puts "$line_count $yyyy-$h-$dd $ee ${time_dt}"
+            #puts "$line_count $yyyy-$h-$dd $ee ${time_dt}"
             set date_time_s [clock scan "$yyyy-$h-$dd $ee ${time_dt}" -format "%Y-%h-%d %EE %H:%M:%S"]
             #   time_utc time without time zone,
             set t_delta [string trim [string range $line 35 40]]
 
             # delta_t = time_dt - time_utc  per eclipse.gsfc.nasa.gov/SEcat5/deltat.html
             set datetime_utc_s [expr { $date_time_s - $t_delta } ]
-            set date [string range [clock format $datetime_utc_s -format "%Y-%m-%d %EE"] 0 end-4]
-            append date $ee_sql
+            set date [clock format $datetime_utc_s -format "%Y-%m-%d %EE"]
+            regsub -- $ee2 $date $ee_sql date
+            puts "$line_count $date"
             set time_utc [clock format $datetime_utc_s -format "%H:%M:%S"]
             #   duration_s integer,
             # remove leading zeros and spaces
@@ -751,9 +754,11 @@ proc 5mcle_events_import { filename } {
             set sign [string trim [string range $line 7 7]]
             if { $sign eq "" } {
                 set ee "A.D."
+                set ee2 "C.E."
                 set ee_sql "AD"
             } else {
                 set ee "B.C."
+                set ee2 "B.C.E."
                 set ee_sql "BC"
             }
 
@@ -768,15 +773,16 @@ proc 5mcle_events_import { filename } {
             # but we're formatting for sql input
             # dt = dynamical time, see SEcatkey
             set time_dt [string range $line 21 28] 
-            puts "$line_count $yyyy-$h-$dd $ee ${time_dt}"
+            #puts "$line_count $yyyy-$h-$dd $ee ${time_dt}"
             set date_time_s [clock scan "$yyyy-$h-$dd $ee ${time_dt}" -format "%Y-%h-%d %EE %H:%M:%S"]
             #   time_utc time without time zone,
             set t_delta [string trim [string range $line 31 35]]
 
             # delta_t = time_dt - time_utc  per eclipse.gsfc.nasa.gov/SEcat5/deltat.html
             set datetime_utc_s [expr { $date_time_s - $t_delta } ]
-            set date [string range [clock format $datetime_utc_s -format "%Y-%m-%d %EE"] 0 end-4]
-            append date $ee_sql
+            set date [clock format $datetime_utc_s -format "%Y-%m-%d %EE"]
+            regsub -- $ee2 $date $ee_sql date
+            puts "$line_count $date"
             set time_utc [clock format $datetime_utc_s -format "%H:%M:%S"]
             #   duration_s integer,
             # remove leading zeros and spaces using trimleft "0"
