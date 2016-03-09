@@ -3,3 +3,6 @@
 \copy soa_soli_input from '[acs_root_dir]/packages/so-alert/sql/common/soho-ii.dat' delimiter ';' null as ''
 \copy soa_neo_ca from '[acs_root_dir]/packages/so-alert/sql/common/neo-db-20120226.dat' delimter ';' null as ''
 \copy soa_earth_sun_moon_event_sources from '[acs_root_dir]/so-alert/sql/common/soa_earth_sun_moon_event_sources.dat' delimiter ';' null as ''
+\copy soa_earth_sun_moon_events from '[acs_root_dir]/so-alert/sql/common/solar-eclipse.dat' delimiter ';' null as ''
+\copy soa_earth_sun_moon_events from '[acs_root_dir]/so-alert/sql/common/lunar-eclipse.dat' delimiter ';' null as ''
+\copy soa_earth_sun_moon_events from '[acs_root_dir]/so-alert/sql/common/lunar-phase.dat' delimiter ';' null as ''
