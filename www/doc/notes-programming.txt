@@ -65,6 +65,12 @@ Cornoa Holes visible in these, listed in order of highest detection first:
   SDO: AIA 211, AIA 094, AIA 335, AIA 131
   SOHO: EIT 195, EIT 284, EIT 171
 
+Ecliptic plasma current ring (theoretical).
+Some evidence is consistent of observations from some space probes in the outer solar system,
+and also indirectly via increase incidence of aurora near equinoxes, 
+per Semiannual Variation of Geomagnetic Activity by C.T. Russel and R.L. McPherron, (c)1973 
+(retrieved on 20160311 from http://www-ssc.igpp.ucla.edu/personnel/russell/papers/40/ )
+
 
 DATA -SOLAR
 
