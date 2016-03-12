@@ -65,11 +65,24 @@ Cornoa Holes visible in these, listed in order of highest detection first:
   SDO: AIA 211, AIA 094, AIA 335, AIA 131
   SOHO: EIT 195, EIT 284, EIT 171
 
-Ecliptic plasma current ring (theoretical).
+Ecliptic plasma current disc (theoretical).
 Some evidence is consistent of observations from some space probes in the outer solar system,
 and also indirectly via increase incidence of aurora near equinoxes, 
 per Semiannual Variation of Geomagnetic Activity by C.T. Russel and R.L. McPherron, (c)1973 
 (retrieved on 20160311 from http://www-ssc.igpp.ucla.edu/personnel/russell/papers/40/ )
+The paper states "..the predicted maximums do not fall either on March and September 5 or on March and September 21,
+but early in April and early in October." This is consistent with magnetic fields, and charge eddies building over time,
+and then releasing relatively quickly via self-induction as the Earth leaves the primary current generator.
+The slope of change of their observations (their fig.14) suggests a phase shift partially dependent
+on the density of the current disc. When current is strong:
+peaks on day 90, 270, troughs on day 0 and 180, with peak change around midpoints of these.
+When current is weak (near 50%?), 
+peaks on day 114 and 298, with troughs near day 14, and 196.
+From this, we can infer that current disc may be oriented according to the strong observations,
+and have a transitional boundary most well defined at the weaker peaks, which is also the point during
+the stronger currents, when the change in the strong field effects are strongest, also.
+Therefore current disc might be defined as occupying region of orbit on day 90 and 270 +/-25 days;
+or the plain of the ecliptic 
 
 
 DATA -SOLAR
