@@ -32,6 +32,11 @@ puts "proc 5mcse_events_import { filename } "
 puts "proc 5mcle_events_import { filename } "
 puts "proc usno_moon_phases { } "
 puts "proc usno_moon_phases_to_dat { }"
+puts "proc ace_mag_1h_to_dat { } "
+puts "proc ace_sis_1h_to_dat { } "
+puts "proc ace_swepam_1h_to_dat { } "
+puts "proc ace_epam_1h_to_dat { } "
+puts "proc ace_loc_1h_to_dat { } "
 
 proc event_date_range { event_yyyymmdd days_before days_after} {
     # a date range builder 
@@ -957,3 +962,467 @@ proc usno_moon_phases_to_dat { } {
     puts "${newfilename} created."
 
 }
+
+
+
+proc ace_mag_1h_to_dat { } {
+    # ace_mag_1h
+    # ace_sis_1h
+    # ace_swepam_1h
+    # ace_epam_1h
+    # ace_loc_1h
+
+    set oldfilename "/home/beta/so-corona-hole/sohoftp.nascom.nasa.gov/all_mag_1h.txt"
+    set newfilename "ace_mag_1h.dat"
+    set data_txt ""
+    #  cfcount = file counter
+    set cfcount 1
+    set fileId [open $oldfilename r]
+    puts "reading."
+    while { ![eof $fileId] } {
+        #  Read entire file. 
+        append data_txt [read $fileId]
+        puts -nonewline "."
+    }
+    close $fileId
+    # get rid of extra spaces and all EOLs
+    # create a new line for each table row
+    #  split is unable to split lines consistently with \n or \r
+    #  so, splitting by everything, and recompiling each line of file.
+    # splitting by end-of-line
+    set data1_list [split $data_txt "\n"]
+
+    # data file is fixed-width format
+    set data2_lists [list ]
+    #       -- yyyy-mm-dd
+    #       date date,
+    #       -- hh::mm
+    #       time_utc time without time zone,
+    #       -- seconds
+    #       duration_s integer,
+    #       --  Status(S): 0 = nominal data, 1 to 8 = bad data record, 9 = no data
+    #       status varchar(1),
+    #       -- Bx ie magnentic field x-axis
+    #       bx numeric,
+    #       -- By ie ma...
+    #       by numeric,
+    #       bz numeric,
+    #       bt numeric,
+    #       latitude numeric,
+    #       longitude numeric
+
+    set duration_s "3600"
+    
+    foreach line $data1_list {
+        # parse time
+        if { [string length $line ] > 84 } {
+            set yyyy [string range $line 0 3]
+            set mm [string range $line 5 6]
+            set dd [string range $line 8 9]
+            set hour [string range $line 12 13]
+            set min [string range $line 14 15]
+            
+            set time_utc "${hour}:${min}"
+            set date "${yyyy}-${mm}-${dd}"
+            set status [string range $line 36 36]
+            set bx [string trim [string range $line 38 44]]
+            set by [string trim [string range $line 46 52]]
+            set bz [string trim [string range $line 54 60]]
+            set bt [string trim [string range $line 62 68]]
+            set lat [string trim [string range $line 70 76]]
+            set lon [string trim [string range $line 78 84]]
+            set new_line_list [list $date $time_utc $duration_s $status $bx $by $bz $bt $lat $lon]
+            
+            lappend data2_lists $new_line_list
+        } else {
+            if { [string length $line] > 10 } {
+                set maybe_data_p 1
+                if { $maybe_data_p } {
+                    puts "rejected -->$line"
+                }
+                # puts "rejected '[string range $line 0 20]..[string range $line end-9 end]'"
+            }
+        }
+
+    }
+    puts "[llength $data2_lists] points"
+    
+    
+    set fileId [open $newfilename w]    
+    foreach row_list $data2_lists {
+        set row [join $row_list ";"]
+        #	puts $row
+        puts $fileId $row
+    }
+    close $fileId
+    puts "${newfilename} created."
+    
+}
+
+
+proc ace_sis_1h_to_dat { } {
+    # ace_mag_1h
+    # ace_sis_1h
+    # ace_swepam_1h
+    # ace_epam_1h
+    # ace_loc_1h
+
+    set oldfilename "/home/beta/so-corona-hole/sohoftp.nascom.nasa.gov/all_sis_1h.txt"
+    set newfilename "ace_sis_1h.dat"
+    set data_txt ""
+    #  cfcount = file counter
+    set cfcount 1
+    set fileId [open $oldfilename r]
+    puts "reading."
+    while { ![eof $fileId] } {
+        #  Read entire file. 
+        append data_txt [read $fileId]
+        puts -nonewline "."
+    }
+    close $fileId
+    # get rid of extra spaces and all EOLs
+    # create a new line for each table row
+    #  split is unable to split lines consistently with \n or \r
+    #  so, splitting by everything, and recompiling each line of file.
+    # splitting by end-of-line
+    set data1_list [split $data_txt "\n"]
+
+    # data file is fixed-width format
+    set data2_lists [list ]
+#       -- yyyy-mm-dd
+#       date date,
+#       -- hh::mm
+#       time_utc time without time zone,
+#       -- seconds, refers to change in time per data point
+#       duration_s integer,
+#       --  Status(S): 0 = nominal data, 1 to 8 = bad data record, 9 = no data
+#       status_10 varchar(1),
+#       -- integral proton flux greater than 10MeV
+#       ipf_gt_10 numeric,
+#       status_30 varchar(1),
+#       -- integral proton flux greater than 30MeV
+#       ipf_gt_30 numeric
+
+    set duration_s "3600"
+    
+    foreach line $data1_list {
+        # parse time
+        if { [string length $line ] > 67 } {
+            set yyyy [string range $line 0 3]
+            set mm [string range $line 5 6]
+            set dd [string range $line 8 9]
+            set hour [string range $line 12 13]
+            set min [string range $line 14 15]
+            
+            set time_utc "${hour}:${min}"
+            set date "${yyyy}-${mm}-${dd}"
+
+            set s10 [string range $line 38 38]
+            set i10 [string trim [string range $line 40 50]]
+            set s30 [string range $line 55 55]
+            set i30 [string trim [string range $line 57 67]]
+            set new_line_list [list $date $time_utc $duration_s $s10 $i10 $s30 $i30]
+            
+            lappend data2_lists $new_line_list
+        } else {
+            if { [string length $line] > 10 } {
+                set maybe_data_p 1
+                if { $maybe_data_p } {
+                    puts "rejected -->'${line}'"
+                }
+                # puts "rejected '[string range $line 0 20]..[string range $line end-9 end]'"
+            }
+        }
+
+    }
+    puts "[llength $data2_lists] points"
+
+    set fileId [open $newfilename w]    
+    foreach row_list $data2_lists {
+        set row [join $row_list ";"]
+        #	puts $row
+        puts $fileId $row
+    }
+    close $fileId
+    puts "${newfilename} created."
+}
+
+
+proc ace_swepam_1h_to_dat { } {
+    # ace_mag_1h
+    # ace_sis_1h
+    # ace_swepam_1h
+    # ace_epam_1h
+    # ace_loc_1h
+
+    set oldfilename "/home/beta/so-corona-hole/sohoftp.nascom.nasa.gov/all_swepam_1h.txt"
+    set newfilename "ace_swepam_1h.dat"
+    set data_txt ""
+    #  cfcount = file counter
+    set cfcount 1
+    set fileId [open $oldfilename r]
+    puts "reading."
+    while { ![eof $fileId] } {
+        #  Read entire file. 
+        append data_txt [read $fileId]
+        puts -nonewline "."
+    }
+    close $fileId
+    # get rid of extra spaces and all EOLs
+    # create a new line for each table row
+    #  split is unable to split lines consistently with \n or \r
+    #  so, splitting by everything, and recompiling each line of file.
+    # splitting by end-of-line
+    set data1_list [split $data_txt "\n"]
+
+    # data file is fixed-width format
+    set data2_lists [list ]
+#       -- yyyy-mm-dd
+#       date date,
+#       -- hh::mm
+#       time_utc time without time zone,
+#       -- seconds
+#       duration_s integer,
+#       --  Status(S): 0 = nominal data, 1 to 8 = bad data record, 9 = no data
+#       status varchar(1),
+#       proton_density numeric,
+#       bulk_speed numeric,
+#       -- ion temperature
+#       ion_temp numeric
+
+    set duration_s "3600"
+    
+    foreach line $data1_list {
+        # parse time
+        if { [string length $line ] > 71 } {
+            set yyyy [string range $line 0 3]
+            set mm [string range $line 5 6]
+            set dd [string range $line 8 9]
+            set hour [string range $line 12 13]
+            set min [string range $line 14 15]
+            
+            set time_utc "${hour}:${min}"
+            set date "${yyyy}-${mm}-${dd}"
+
+            set status [string range $line 36 36]
+            set pd [string trim [string range $line 38 47]]
+            set bs [string trim [string range $line 49 58]]
+            set it [string trim [string range $line 60 71]]
+
+            set new_line_list [list $date $time_utc $duration_s $status $pd $bs $it]
+            
+            lappend data2_lists $new_line_list
+        } else {
+            if { [string length $line] > 10 } {
+                set maybe_data_p 1
+                if { $maybe_data_p } {
+                    puts "rejected -->'${line}'"
+                }
+                # puts "rejected '[string range $line 0 20]..[string range $line end-9 end]'"
+            }
+        }
+
+    }
+    puts "[llength $data2_lists] points"
+
+    set fileId [open $newfilename w]    
+    foreach row_list $data2_lists {
+        set row [join $row_list ";"]
+        #	puts $row
+        puts $fileId $row
+    }
+    close $fileId
+    puts "${newfilename} created."
+}
+
+
+proc ace_epam_1h_to_dat { } {
+    # ace_mag_1h
+    # ace_sis_1h
+    # ace_swepam_1h
+    # ace_epam_1h
+    # ace_loc_1h
+
+    set oldfilename "/home/beta/so-corona-hole/sohoftp.nascom.nasa.gov/all_epam_1h.txt"
+    set newfilename "ace_epam_1h.dat"
+    set data_txt ""
+    #  cfcount = file counter
+    set cfcount 1
+    set fileId [open $oldfilename r]
+    puts "reading."
+    while { ![eof $fileId] } {
+        #  Read entire file. 
+        append data_txt [read $fileId]
+        puts -nonewline "."
+    }
+    close $fileId
+    # get rid of extra spaces and all EOLs
+    # create a new line for each table row
+    #  split is unable to split lines consistently with \n or \r
+    #  so, splitting by everything, and recompiling each line of file.
+    # splitting by end-of-line
+    set data1_list [split $data_txt "\n"]
+
+    # data file is fixed-width format
+    set data2_lists [list ]
+#       -- yyyy-mm-dd
+#       date date,
+#       -- hh::mm
+#       time_utc time without time zone,
+#       -- seconds
+#       duration_s integer,
+#       -- Electron Status(S): 0 = nominal, 4,6,7,8 = bad data, unable to process, 9 = no data
+#       e_status varchar(1),
+#       -- values are Differential Flux:
+#       electron_38_to_53 numeric,
+#       electron_175_to_315 numeric,
+#       -- proton status
+#       p_status varchar(1),
+#       -- 47 to 68
+#       proton_58 numeric,
+#       -- 175 to 315
+#       proton_155 numeric,
+#       -- 310 to 580
+#       proton_445 numeric,
+#       -- 795 to 1193
+#       proton_644 numeric,
+#       -- 1060 to 1900
+#       proton_1480 numeric,
+#       -- anistropy index
+#       anistropy_idx numeric
+
+    set duration_s "3600"
+    
+    foreach line $data1_list {
+        # parse time
+        if { [string length $line ] > 114 } {
+            set yyyy [string range $line 0 3]
+            set mm [string range $line 5 6]
+            set dd [string range $line 8 9]
+            set hour [string range $line 12 13]
+            set min [string range $line 14 15]
+            
+            set time_utc "${hour}:${min}"
+            set date "${yyyy}-${mm}-${dd}"
+
+            set e_status [string range $line 34 34]
+            set e46 [string trim [string range $line 36 44]]
+            set e245 [string trim [string range $line 46 54]]
+            set p_status [string range $line 57 57]
+            set p58 [string trim [string range $line 59 67]]
+            set p155 [string trim [string range $line 69 77]]
+            set p455 [string trim [string range $line 79 87]]
+            set p644 [string trim [string range $line 89 97]]
+            set p1480 [string trim [string range $line 99 107]]
+            set anti [string trim [string range $line 109 114]]
+
+            set new_line_list [list $date $time_utc $duration_s $e_status $e46 $e245 $p_status $p58 $p155 $p455 $p644 $p1480 $anti]
+            
+            lappend data2_lists $new_line_list
+        } else {
+            if { [string length $line] > 10 } {
+                set maybe_data_p 1
+                if { $maybe_data_p } {
+                    puts "rejected -->'${line}'"
+                }
+                # puts "rejected '[string range $line 0 20]..[string range $line end-9 end]'"
+            }
+        }
+
+    }
+    puts "[llength $data2_lists] points"
+
+    set fileId [open $newfilename w]    
+    foreach row_list $data2_lists {
+        set row [join $row_list ";"]
+        #	puts $row
+        puts $fileId $row
+    }
+    close $fileId
+    puts "${newfilename} created."
+}
+
+
+proc ace_loc_1h_to_dat { } {
+    # ace_mag_1h
+    # ace_sis_1h
+    # ace_swepam_1h
+    # ace_epam_1h
+    # ace_loc_1h
+
+    set oldfilename "/home/beta/so-corona-hole/sohoftp.nascom.nasa.gov/all_loc_1h.txt"
+    set newfilename "ace_loc_1h.dat"
+    set data_txt ""
+    #  cfcount = file counter
+    set cfcount 1
+    set fileId [open $oldfilename r]
+    puts "reading."
+    while { ![eof $fileId] } {
+        #  Read entire file. 
+        append data_txt [read $fileId]
+        puts -nonewline "."
+    }
+    close $fileId
+    # get rid of extra spaces and all EOLs
+    # create a new line for each table row
+    #  split is unable to split lines consistently with \n or \r
+    #  so, splitting by everything, and recompiling each line of file.
+    # splitting by end-of-line
+    set data1_list [split $data_txt "\n"]
+
+    # data file is fixed-width format
+    set data2_lists [list ]
+#       -- yyyy-mm-dd
+#       date date,
+#       -- hh::mm
+#       time_utc time without time zone,
+#       -- seconds, refers to change in time per data point
+#       duration_s integer,
+#       x_gse numeric,
+#       y_gse numeric,
+#       z_gse numeric
+
+    set duration_s "3600"
+    
+    foreach line $data1_list {
+        # parse time
+        if { [string length $line ] > 59 } {
+            set yyyy [string range $line 0 3]
+            set mm [string range $line 5 6]
+            set dd [string range $line 8 9]
+            set hour [string range $line 12 13]
+            set min [string range $line 14 15]
+            
+            set time_utc "${hour}:${min}"
+            set date "${yyyy}-${mm}-${dd}"
+
+            set x [string trim [string range $line 33 41]]
+            set y [string trim [string range $line 43 50]]
+            set z [string trim [string range $line 52 59]]
+
+            set new_line_list [list $date $time_utc $duration_s $x $y $z]
+            
+            lappend data2_lists $new_line_list
+        } else {
+            if { [string length $line] > 10 } {
+                set maybe_data_p 1
+                if { $maybe_data_p } {
+                    puts "rejected -->'${line}'"
+                }
+                # puts "rejected '[string range $line 0 20]..[string range $line end-9 end]'"
+            }
+        }
+
+    }
+    puts "[llength $data2_lists] points"
+
+    set fileId [open $newfilename w]    
+    foreach row_list $data2_lists {
+        set row [join $row_list ";"]
+        #	puts $row
+        puts $fileId $row
+    }
+    close $fileId
+    puts "${newfilename} created."
+}
+

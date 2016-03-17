@@ -99,6 +99,8 @@ to avoid detailed orbital analysis such as
 via NASA'S NAIF SPICE software.
 http://naif.jpl.nasa.gov/naif/utilities__PC_Linux_64bit.html
 
+Horizons calculations are from Jpl Horizons. 
+See so-alert/sql/postgresql/so-alert-create.sql for details
 
 DATA -EARTHQUAKES
 

@@ -13,13 +13,28 @@ ad_library {
     Temporary comment about git commit comments: http://xkcd.com/1296/
 }
 
-namespace eval so {}
+namespace eval soa {}
 
-ad_proc -private so::ex {
-    factor_curve_lol
+# Given top, left and bottom, right positions of a near circle
+# representing a sphere, 
+# create a proc that converts a coordinate within the circle to
+# the sphere's RA and Dec in degrees,
+# and adjust these values to absolutes given the RA and DEC of the
+# center position of the circle.
+
+
+ad_proc -private soa::transform_circle_pos_to_sphere_coord {
+    upper_left_x
+    upper_left_y
+    lower_right_x
+    lower_right_y
 } {
-    Returns laughter and fun
+    Returns relative Right Ascension and Declination of a sphere
+    given the upper_left and lower_right positions of a disc representing
+    a sphere.
 } {
-    return $laughter_and_fun
+    set x_y_list [list ]
+    
+    return $x_y_list
 }
 

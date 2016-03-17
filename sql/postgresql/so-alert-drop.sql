@@ -32,3 +32,23 @@ DROP TABLE soa_earth_sun_moon_event_sources;
 DROP index soa_earth_sun_moon_events_type;
 DROP index soa_earth_sun_moon_events_date;
 DROP TABLE soa_earth_sun_moon_events;
+
+DROP index soa_solar_tilt_date_idx;
+DROP TABLE soa_solar_tilt;
+
+
+DROP index soa_ace_mag_date_idx;
+DROP TABLE soa_ace_mag;
+
+DROP index soa_ace_swepam_date_idx;
+DROP TABLE soa_ace_swepam;
+
+DROP index soa_ace_epam_date_idx;
+DROP TABLE soa_ace_epam;
+
+DROP index soa_ace_loc_date_idx;
+DROP TABLE soa_ace_loc;
+
+DROP index soa_ace_sis_date_idx;
+DROP TABLE soa_ace_sis;
+
