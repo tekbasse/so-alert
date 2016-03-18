@@ -12,3 +12,4 @@
 \copy soa_ace_epam from '[acs_root_dir]/so-alert/sql/common/soa_ace_epam_1h.dat' delimiter ';' null as ''
 \copy soa_ace_loc from '[acs_root_dir]/so-alert/sql/common/soa_ace_loc_1h.dat' delimiter ';' null as ''
 \copy soa_ace_sis from '[acs_root_dir]/so-alert/sql/common/soa_ace_sis_1h.dat' delimiter ';' null as ''
+\copy soa_tromsoe_mag from '[acs_root_dir]/so-alert/sql/common/tromsoe-mag.dat' delimiter ';' null as ''

@@ -37,6 +37,7 @@ puts "proc ace_sis_1h_to_dat { } "
 puts "proc ace_swepam_1h_to_dat { } "
 puts "proc ace_epam_1h_to_dat { } "
 puts "proc ace_loc_1h_to_dat { } "
+puts "proc tromsoe_mag_to_dat { } "
 
 proc event_date_range { event_yyyymmdd days_before days_after} {
     # a date range builder 
@@ -1426,3 +1427,88 @@ proc ace_loc_1h_to_dat { } {
     puts "${newfilename} created."
 }
 
+
+
+proc tromsoe_mag_to_dat { } {
+    set month_list [list 01 02 03 04 05 06 07 08 09 10 11 12]
+    set year_list [list 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015]
+    set hour_list [list 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23]
+    set hour_last_list [list 14 18 22 26 30 34 38 42 46 50 54 58 62 66 70 74 78 82 86 90 94 98 102 106]
+    # first is 2 less than last
+
+    set newfilename "tromsoe-mag.dat"
+    set data_final_lists [list ]
+    set min "59"
+    set duration_s "3600"
+    foreach year $year_list {
+        foreach month $month_list {
+            set data_txt ""
+            set oldfilename "/home/beta/so-corona-hole/flux.phys.uit.no/cgi-bin/HistActIx.cgi\?typ\=Ascii\&site\=tro2a\&month\=${month}\&year\=${year}\&ret\=unix\&submit\=submit"
+            set inputId [open $oldfilename r]
+            puts "reading ${oldfilename}..."
+            while { ![eof $inputId] } {
+                #  Read entire file. 
+                append data_txt [read $inputId]
+                puts -nonewline "."
+            }
+            close $inputId
+            # splitting by end-of-line
+            set data1_list [split $data_txt "\n"]
+
+            #  cfcount = file counter
+            set cfcount 1
+            # data file is fixed-width format
+            foreach line $data1_list {
+                # parse time
+                set dd [string range $line 0 1]
+                if { [string length $line ] > 106 && $dd ne "DD" } {
+                    set yyyy [string range $line 6 9]
+                    set mm [string range $line 3 4]
+                    #set dd \[string range $line 0 1\]
+                    set hour_i 0
+                    foreach hour $hour_list {
+                        set last_i [lindex $hour_last_list $hour_i]
+                        set first_i [expr { $last_i - 2 } ]
+
+                        set time_utc "${hour}:${min}"
+                        set date "${yyyy}-${mm}-${dd}"
+                    
+                        set x [string trim [string range $line $first_i $last_i]]
+                        incr hour_i
+                    }
+                    
+                    set new_line_list [list $date $time_utc $duration_s $x]
+                    incr cfcount
+                    lappend data_final_lists $new_line_list
+                } else {
+                    if { [string length $line] > 10 } {
+                        set maybe_data_p 1
+                        if { $line eq "Activity index for Tromso" || $dd eq "DD" } {
+                            set maybe_data_p 0
+                        }
+                        if { $line eq "The activity index is the absolute mean deviation from last 24 hrs mean H" } {
+                            set maybe_data_p 0
+                        }
+                        if { $maybe_data_p } {
+                            puts "rejected -->'${line}'"
+                        }
+                        # puts "rejected '[string range $line 0 20]..[string range $line end-9 end]'"
+                    }
+                }
+                
+            }
+            puts "${cfcount} points for ${year}-${month}."
+        }
+    }
+            
+            
+    set outputId [open $newfilename w]    
+    foreach row_list $data_final_lists {
+        set row [join $row_list ";"]
+        #	puts $row
+        puts $outputId $row
+    }
+    
+    close $outputId
+    puts "${newfilename} with [llength $data_final_lists] points created."
+}

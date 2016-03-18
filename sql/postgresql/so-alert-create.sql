@@ -390,7 +390,7 @@ CREATE index soa_ace_loc_date_idx on soa_ace_loc (date);
 CREATE TABLE soa_ace_sis (
        -- yyyy-mm-dd
        date date,
-       -- hh::mm
+       -- hh:mm
        time_utc time without time zone,
        -- seconds, refers to change in time per data point
        duration_s integer,
@@ -404,3 +404,20 @@ CREATE TABLE soa_ace_sis (
 );
 
 CREATE index soa_ace_sis_date_idx on soa_ace_sis (date);
+
+
+-- Activity index for Tromso
+-- The activity index is the absolute mean deviation from last 24 hrs mean H
+CREATE TABLE soa_tromsoe_mag (
+       -- yyyy-mm-dd
+       date date,
+       -- hh:mm
+       time_utc time without time zone,
+       -- seconds, refers to change in time per data point
+       duration_s integer,
+       -- -99 means data not available
+       mag_index numeric
+);
+
+CREATE index soa_tromsoe_mag_date_idx on soa_tromsoe_mag (date);
+

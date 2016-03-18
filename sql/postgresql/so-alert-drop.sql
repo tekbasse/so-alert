@@ -52,3 +52,5 @@ DROP TABLE soa_ace_loc;
 DROP index soa_ace_sis_date_idx;
 DROP TABLE soa_ace_sis;
 
+DROP index soa_tromsoe_mag_date_idx;
+DROP TABLE soa_tromsoe_mag;
