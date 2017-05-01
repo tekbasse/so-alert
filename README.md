@@ -24,7 +24,7 @@ solar monitoring. This is one way.
 license
 -------
 Copyright (c) 2016 Benjamin Brink
-po box 20, Marylhurst, OR 97036-0020 usa
+po box 193, Marylhurst, OR 97036-0193 usa
 email: tekbasse@yahoo.com
 
 SO Alert Package is open source and published under the GNU General Public License, 
